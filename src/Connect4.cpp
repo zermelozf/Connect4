@@ -11,7 +11,13 @@
 #define MIN(a,b) (a<=b?a:b)
 
 Connect4::Connect4() {
+	board = new int* [NB_ROWS];
+		for (int i=0; i<NB_ROWS; i++) {
+			board[i] = new int [NB_COLUMNS];
+		}
 	startGame();
+	threatCollection = new ThreatCollection(board, NB_ROWS, NB_COLUMNS);
+	//threatCollection->display();
 }
 
 Connect4::~Connect4() {
@@ -19,10 +25,6 @@ Connect4::~Connect4() {
 }
 
 void Connect4::startGame() {
-	board = new int* [NB_ROWS];
-	for (int i=0; i<NB_ROWS; i++) {
-		board[i] = new int [NB_COLUMNS];
-	}
 	for (int i=0; i<NB_ROWS; i++) {
 		for (int j=0; j<NB_COLUMNS; j++) {
 			board[i][j] = 0;
@@ -31,8 +33,7 @@ void Connect4::startGame() {
 	player = 1;
 	gameFinished = 0;
 	numberOfTilesOnBoard = 0;
-
-	ThreatCollection *threatCollection = new ThreatCollection(board, NB_ROWS, NB_COLUMNS);
+	//threatCollection->display();
 }
 
 void Connect4::setDifficulty(int dif) {
@@ -191,6 +192,8 @@ void Connect4::computerPlay() {
 		printf("\n");
 	}
 	playAtColumn(bestMove);
+	cout << "played" << endl;
+	//threatCollection->display();
 }
 
 int Connect4::abPruning(int alpha, int beta, int depht) {
@@ -259,4 +262,4 @@ void Connect4::displayBoard() {
 
 void Connect4::displayThreats() {
 	threatCollection->display();
-;}
+}

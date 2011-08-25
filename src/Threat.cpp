@@ -7,6 +7,13 @@
 
 #include "Threat.h"
 
+int op(int x) {
+	if (x>0) return x;
+	else return 0;
+}
+
+using namespace std;
+
 Threat::Threat(int *tile0, int *tile1, int *tile2, int *tile3) {
 	tile =  new int* [4];
 	tile[0] = tile0;
@@ -15,47 +22,88 @@ Threat::Threat(int *tile0, int *tile1, int *tile2, int *tile3) {
 	tile[3] = tile3;
 }
 
+int Threat::eval() {
+	int s1 = op(*tile[0])+op(*tile[1])+op(*tile[2])+op(*tile[3]);
+	int s2 = op(-*tile[0])+op(-*tile[1])+op(-*tile[2])+op(-*tile[3]);
+	if (s1 == 0 && s2 != 0)
+		return -s2;
+	else if (s1 != 0 && s2 == 0)
+		return s1;
+	else return 0;
+}
+
 Threat::~Threat() {
 
 }
 
 void Threat::display() {
-	std::cout << "In threat" << std::endl;
-	for (int i=0; i<4; i++) {
-		std::cout << "tile i" << tile[i] << " " <<std::endl;
+	for (int i=0; i<NB_TILES_IN_THREAT; i++) {
+		cout << setw(2) << *tile[i] << " ";
 	}
+	cout << eval() << endl;
 }
 
 
 ThreatCollection::ThreatCollection(int **board, int nb_rows, int nb_columns) {
-	nb_threat = 1;
-
+	nb_threat = 0;
 	for (int i=0; i<nb_rows; i++) {
 	        for (int j=0; j<nb_columns; j++)
 	        {
-	            if (j+3<7)
-	            {
-	            	if (board[i][j] == board[i][j+1] && board[i][j+1] == board[i][j+2] && board[i][j+2] == board[i][j+3] && board[i][j] != 0) {
-	            		threat[nb_threat-1] = new Threat(&board[i][j], &board[i][j+1], &board[i][j+2], &board[i][j+3]) ;
-	            	}
+	            if (j+3<7) {
+	            	threat[nb_threat] = new Threat(&board[i][j], &board[i][j+1], &board[i][j+2], &board[i][j+3]) ;
+	            	nb_threat++;
 	            }
-	            if (j+3<7 && i+3<6)
-	            {
-	                if (board[i][j] == board[i+1][j+1] && board[i+1][j+1] == board[i+2][j+2] && board[i+2][j+2] == board[i+3][j+3] && board[i][j] != 0)
-	                	threat[nb_threat-1] = new Threat(&board[i][j], &board[i+1][j+1], &board[i+2][j+2], &board[i+3][j+3]);
+	            if (j+3<7 && i+3<6) {
+	                threat[nb_threat] = new Threat(&board[i][j], &board[i+1][j+1], &board[i+2][j+2], &board[i+3][j+3]);
+	            	nb_threat++;
+	        	}
+	            if (i+3<6) {
+	                threat[nb_threat] = new Threat(&board[i][j], &board[i+1][j], &board[i+2][j], &board[i+3][j]);
+	                nb_threat++;
 	            }
-	            if (i+3<6)
-	            {
-	                if (board[i][j] == board[i+1][j] && board[i+1][j] == board[i+2][j] && board[i+2][j] == board[i+3][j] && board[i][j] != 0)
-	                	threat[nb_threat-1] = new Threat(&board[i][j], &board[i+1][j], &board[i+2][j], &board[i+3][j]);
-	            }
-	            if (j>=3 && i+3<6)
-	            {
-	                if (board[i][j] == board[i+1][j-1] && board[i+1][j-1] == board[i+2][j-2] && board[i+2][j-2] == board[i+3][j-3] && board[i][j] != 0)
-	                	threat[nb_threat-1] = new Threat(&board[i][j], &board[i+1][j-1], &board[i+2][j-2], &board[i+3][j-3]);
+	            if (j>=3 && i+3<6) {
+	                threat[nb_threat] = new Threat(&board[i][j], &board[i+1][j-1], &board[i+2][j-2], &board[i+3][j-3]);
+	            	nb_threat++;
 	            }
 	        }
 	    }
+}
+
+int ThreatCollection::eval() {
+	int score = 0;
+	for (int i=0; i<nb_threat; i++) {
+		switch (threat[i]->eval()){
+		case 0:
+			break;
+		case 1:
+			score += 1;
+			break;
+		case 2:
+			score += 50;
+			break;
+		case 3:
+			score += 2500;
+			break;
+		case 4:
+			score += 15000;
+			break;
+		case -1:
+			score += -1;
+			break;
+		case -2:
+			score += -50;
+			break;
+		case -3:
+			score += -2500;
+			break;
+		case -4:
+			score += -15000;
+			break;
+		default:
+			break;
+		}
+	}
+	return score;
 }
 
 ThreatCollection::~ThreatCollection() {
@@ -63,5 +111,10 @@ ThreatCollection::~ThreatCollection() {
 }
 
 void ThreatCollection::display() {
-	threat[0]->display();
+	cout << "Display threats" <<endl;
+	cout << "nb_threat: " << this->nb_threat << endl;
+	for (int i=0; i<nb_threat; i++) {
+		threat[i]->display();
+	}
+
 }

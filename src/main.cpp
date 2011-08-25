@@ -14,13 +14,13 @@ using namespace std;
 
 int main() {
 
-	cout << "Begin";
+	cout << "Begin" << endl;
 	Connect4 game =  Connect4();
 	game.setDifficulty(3);
 	while(game.evalBoard() != 1 && game.evalBoard() != -1) {
 		game.computerPlay();
 		game.displayBoard();
-		//game.displayThreats();
+		game.displayThreats();
 		cout << endl;
 	}
 	return 0;
