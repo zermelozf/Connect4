@@ -8,8 +8,14 @@
 #ifndef CONNECT4_H_
 #define CONNECT4_H_
 
+#define NB_ROWS 6
+#define NB_COLUMNS 7
+
 #include <iostream>
+#include <iomanip>
 #include <string>
+
+#include "Threat.h"
 
 using namespace std;
 
@@ -32,21 +38,26 @@ public:
 	int firstEmptyRowAtColumn(int column);
 	int lastFilledRowAtColumn(int column);
 
-	long int staticEvalBoard();
+	int staticEvalBoard();
 	int* possible();
 	void computerPlay();
 
-	long int abPruning(long int alpha, long int beta, int depht);
 	int op(int x);
+	int abPruning(int alpha, int beta, int depht);
 	void threat(int s1, int s2, int *t11, int *t12, int *t13, int *t14, int *t21, int *t22, int *t23, int *t24);
 
+	void displayBoard();
+	void displayThreats();
+
 private:
-	int board[6][7];
+	//int board[NB_ROWS][NB_COLUMNS];
+	int **board;
 	int player;
 	int gameFinished;
 	int numberOfTilesOnBoard;
 	int difficulty;
 	string firstPlayer;
+	ThreatCollection *threatCollection;
 };
 
 #endif /* CONNECT4_H_ */
