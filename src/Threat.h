@@ -19,6 +19,7 @@ public:
 	virtual ~Threat();
 
 	int eval();
+	bool isFourInARow();
 
 	void display();
 private:
@@ -32,6 +33,7 @@ public:
 	virtual ~ThreatCollection();
 
 	int eval();
+	bool hasFourInARow();
 
 	void display();
 

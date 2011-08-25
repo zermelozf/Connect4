@@ -40,31 +40,8 @@ void Connect4::setDifficulty(int dif) {
 	difficulty = dif;
 }
 
-int Connect4::evalBoard() {
-    for (int i=0; i<NB_ROWS; i++) {
-        for (int j=0; j<NB_COLUMNS; j++)
-        {
-            if (j+3<7)
-            {
-                if (board[i][j] == board[i][j+1] && board[i][j+1] == board[i][j+2] && board[i][j+2] == board[i][j+3] && board[i][j] != 0) return board[i][j];
-            }
-            if (j+3<7 && i+3<6)
-            {
-                if (board[i][j] == board[i+1][j+1] && board[i+1][j+1] == board[i+2][j+2] && board[i+2][j+2] == board[i+3][j+3] && board[i][j] != 0) return board[i][j];
-            }
-            if (i+3<6)
-            {
-                if (board[i][j] == board[i+1][j] && board[i+1][j] == board[i+2][j] && board[i+2][j] == board[i+3][j] && board[i][j] != 0)
-                    {return board[i][j];}
-            }
-            if (j>=3 && i+3<6)
-            {
-                if (board[i][j] == board[i+1][j-1] && board[i+1][j-1] == board[i+2][j-2] && board[i+2][j-2] == board[i+3][j-3] && board[i][j] != 0) return board[i][j];
-            }
-        }
-    }
-    if (numberOfTilesOnBoard == NB_ROWS*NB_COLUMNS) return 3;
-    else return 0;
+bool Connect4::isGameFinished() {
+	return threatCollection->hasFourInARow();
 }
 
 int Connect4::getTileNumber(int row, int col) {
@@ -113,33 +90,7 @@ int Connect4::lastFilledRowAtColumn(int col) {
 }
 
 int Connect4::staticEvalBoard() {
-	int s1, s2;
-	int t11 = 0, t12 = 0, t13 = 0, t14 = 0;
-	int t21 = 0, t22 = 0, t23 = 0, t24 = 0;
-	for (int i=0; i<NB_ROWS; i++) {
-		for (int j=0; j<NB_COLUMNS; j++) {
-			if (j+3<NB_COLUMNS) {
-				s1 = op(board[i][j])+op(board[i][j+1])+op(board[i][j+2])+op(board[i][j+3]);
-				s2 = op(-board[i][j])+op(-board[i][j+1])+op(-board[i][j+2])+op(-board[i][j+3]);
-				threat(s1, s2, &t11, &t12, &t13, &t14, &t21, &t22, &t23, &t24);
-			}
-			if (j+3<NB_COLUMNS && i+3<NB_ROWS) {
-				s1 = op(board[i][j])+op(board[i+1][j+1])+op(board[i+2][j+2])+op(board[i+3][j+3]);
-				s2 = op(-board[i][j])+op(-board[i+1][j+1])+op(-board[i+2][j+2])+op(-board[i+3][j+3]);
-				threat(s1, s2, &t11, &t12, &t13, &t14, &t21, &t22, &t23, &t24);			}
-			if (i+3<NB_ROWS) {
-				s1 = op(board[i][j])+op(board[i+1][j])+op(board[i+2][j])+op(board[i+3][j]);
-				s2 = op(-board[i][j])+op(-board[i+1][j])+op(-board[i+2][j])+op(-board[i+3][j]);
-				threat(s1, s2, &t11, &t12, &t13, &t14, &t21, &t22, &t23, &t24);			}
-			if (j>=3 && i+3<NB_ROWS) {
-				s1 = op(board[i][j])+op(board[i+1][j-1])+op(board[i+2][j-2])+op(board[i+3][j-3]);
-				s2 = op(-board[i][j])+op(-board[i+1][j-1])+op(-board[i+2][j-2])+op(-board[i+3][j-3]);
-				threat(s1, s2, &t11, &t12, &t13, &t14, &t21, &t22, &t23, &t24);			}
-		}
-	}
-	int v1 = 15000*t14 + 2500*t13 + 50*t12 + t11;
-	int v2 = 15000*t24 + 2500*t23 + 50*t22 + t21;
-	return v1-v2;
+	return threatCollection->eval();
 }
 
 int* Connect4::possible() {
@@ -192,12 +143,10 @@ void Connect4::computerPlay() {
 		printf("\n");
 	}
 	playAtColumn(bestMove);
-	cout << "played" << endl;
-	//threatCollection->display();
 }
 
 int Connect4::abPruning(int alpha, int beta, int depht) {
-	if (depht == 1 || evalBoard() == 1 || evalBoard() == -1) {
+	if (depht == 1 || isGameFinished() == true) {
 		return staticEvalBoard();
 	}
 	int *pMoves = possible();
@@ -223,23 +172,6 @@ int Connect4::abPruning(int alpha, int beta, int depht) {
 		}
 		return beta;
 	}
-}
-
-int Connect4::op(int x) {
-	if (x>0) return x;
-	else return 0;
-}
-
-
-void Connect4::threat(int s1, int s2, int *t11, int *t12, int *t13, int *t14, int *t21, int *t22, int *t23, int *t24) {
-	if (s1==1 && s2 ==0) {(*t11)++;}
-	if (s1==2 && s2 ==0) {(*t12)++;}
-	if (s1==3 && s2 ==0) {(*t13)++;}
-	if (s1==4 && s2 ==0) {(*t14)++;}
-	if (s1==0 && s2 ==1) {(*t21)++;}
-	if (s1==0 && s2 ==2) {(*t22)++;}
-	if (s1==0 && s2 ==3) {(*t23)++;}
-	if (s1==0 && s2 ==4) {(*t24)++;}
 }
 
 void Connect4::displayBoard() {

@@ -25,7 +25,7 @@ public:
 
 	void startGame();
 	void setDifficulty(int difficulty);
-	int evalBoard();
+	bool isGameFinished();
 
 	int getTileNumber(int row, int column);
 	int getBoard(int row, int col);
@@ -41,9 +41,7 @@ public:
 	int* possible();
 	void computerPlay();
 
-	int op(int x);
 	int abPruning(int alpha, int beta, int depht);
-	void threat(int s1, int s2, int *t11, int *t12, int *t13, int *t14, int *t21, int *t22, int *t23, int *t24);
 
 	void displayBoard();
 	void displayThreats();

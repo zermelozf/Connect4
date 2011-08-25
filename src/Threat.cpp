@@ -32,6 +32,12 @@ int Threat::eval() {
 	else return 0;
 }
 
+bool Threat::isFourInARow() {
+	if (*tile[0] == *tile[1] && *tile[1] == *tile[2] && *tile[2] == *tile[3] && *tile[0] != 0)
+		return true;
+	return false;
+}
+
 Threat::~Threat() {
 
 }
@@ -40,7 +46,7 @@ void Threat::display() {
 	for (int i=0; i<NB_TILES_IN_THREAT; i++) {
 		cout << setw(2) << *tile[i] << " ";
 	}
-	cout << eval() << endl;
+	cout << "value: " << eval() << " is4inAR: " << isFourInARow() << endl;
 }
 
 
@@ -106,12 +112,20 @@ int ThreatCollection::eval() {
 	return score;
 }
 
+bool ThreatCollection::hasFourInARow() {
+	for (int i=0; i<nb_threat; i++) {
+		if (threat[i]->isFourInARow())
+			return true;
+	}
+	return false;
+}
+
 ThreatCollection::~ThreatCollection() {
 	// TODO Auto-generated destructor stub
 }
 
 void ThreatCollection::display() {
-	cout << "Display threats" <<endl;
+	cout << "Display threats" << endl;
 	cout << "nb_threat: " << this->nb_threat << endl;
 	for (int i=0; i<nb_threat; i++) {
 		threat[i]->display();
