@@ -22,6 +22,10 @@ Threat::Threat(int *tile0, int *tile1, int *tile2, int *tile3) {
 	tile[3] = tile3;
 }
 
+Threat::~Threat() {
+	delete [] tile;
+}
+
 int Threat::eval() {
 	int s1 = op(*tile[0])+op(*tile[1])+op(*tile[2])+op(*tile[3]);
 	int s2 = op(-*tile[0])+op(-*tile[1])+op(-*tile[2])+op(-*tile[3]);
@@ -36,10 +40,6 @@ bool Threat::isFourInARow() {
 	if (*tile[0] == *tile[1] && *tile[1] == *tile[2] && *tile[2] == *tile[3] && *tile[0] != 0)
 		return true;
 	return false;
-}
-
-Threat::~Threat() {
-
 }
 
 void Threat::display() {
@@ -73,6 +73,12 @@ ThreatCollection::ThreatCollection(int **board, int nb_rows, int nb_columns) {
 	            }
 	        }
 	    }
+}
+
+ThreatCollection::~ThreatCollection() {
+	for (int i=0; i<nb_threat; i++) {
+		delete threat[i];
+	}
 }
 
 int ThreatCollection::eval() {
@@ -118,10 +124,6 @@ bool ThreatCollection::hasFourInARow() {
 			return true;
 	}
 	return false;
-}
-
-ThreatCollection::~ThreatCollection() {
-	// TODO Auto-generated destructor stub
 }
 
 void ThreatCollection::display() {

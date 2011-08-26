@@ -21,7 +21,11 @@ Connect4::Connect4() {
 }
 
 Connect4::~Connect4() {
-	// TODO Auto-generated destructor stub
+	for (int i=0; i<NB_ROWS; i++) {
+		delete [] board[i];
+	}
+	delete board;
+	delete threatCollection;
 }
 
 void Connect4::startGame() {
